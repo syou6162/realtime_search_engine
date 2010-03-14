@@ -1,0 +1,12 @@
+stream:
+  username: USERNAME
+  password: PASSWORD
+word2id:
+  host: 127.0.0.1
+  port: 1978
+doc2id:
+  host: 127.0.0.1
+  port: 1979
+word2docs:
+  host: 127.0.0.1
+  port: 1980
