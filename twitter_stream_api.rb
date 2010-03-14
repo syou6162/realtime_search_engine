@@ -14,21 +14,15 @@ config = YAML.load_file("config.yaml")
 
 # @repository = Repository.new("data.db", "pair_of_doc_id_and_word_id")
 
-word2id = Word2ID.new({"hdb_name" => config["word2id"]["hdb_name"],
-                        "mode" => TokyoCabinet::HDB::OWRITER | TokyoCabinet::HDB::OCREAT})
+word2id = Word2ID.new({"host" => config["word2id"]["host"], 
+                        "port" => config["word2id"]["port"]})
 
-doc2id = Doc2ID.new({"hdb_name" => config["doc2id"]["hdb_name"],
-                      "mode" => TokyoCabinet::HDB::OWRITER | TokyoCabinet::HDB::OCREAT})
+doc2id = Doc2ID.new({"host" => config["doc2id"]["host"], 
+                      "port" => config["doc2id"]["port"]})
 
-index_queue = 
-  IndexQueue.new({"word2id" => word2id,
-                   "doc2id" => doc2id,
-                   "hdb_name" => config["index_queue"]["hdb_name"],
-                   "mode" => TokyoCabinet::HDB::OWRITER | TokyoCabinet::HDB::OCREAT})
-
-# index_queue.close
-# word2id.close
-# doc2id.close
+index_queue = IndexQueue.new({"word2id" => word2id, "doc2id" => doc2id,
+                               "host" => config["word2docs"]["host"], 
+                               "port" => config["word2docs"]["port"]})
 
 uri = URI.parse('http://stream.twitter.com/1/statuses/sample.json')
 
@@ -59,7 +53,9 @@ Net::HTTP.start(uri.host, uri.port) do |http|
   end
 end
 
-
+index_queue.close
+word2id.close
+doc2id.close
 
 
 __END__
