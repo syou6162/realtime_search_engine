@@ -2,17 +2,12 @@
 # -*- coding: utf-8 -*-
 require 'yaml'
 require 'json'
-require "repository"
-require "page_queue"
-require "crawler"
 require "word2id"
 require "doc2id"
 require "tweet"
 require "index_queue"
 
 config = YAML.load_file("config.yaml")
-
-# @repository = Repository.new("data.db", "pair_of_doc_id_and_word_id")
 
 word2id = Word2ID.new({"host" => config["word2id"]["host"], 
                         "port" => config["word2id"]["port"]})
@@ -42,13 +37,9 @@ Net::HTTP.start(uri.host, uri.port) do |http|
       # 削除通知など、'text'パラメータを含まないものは無視して次へ
       next unless status['text']
       user = status['user']
-      if user['lang'] == "ja"
-        puts Tweet.new(status).text
-        index_queue.add(Tweet.new(status))
-        # @index_queue.add(Tweet.new("http://twitter.com/#{user['screen_name']}/status/#{status['id']}", status['text'])) 
-        puts i
-        i += 1
-      end
+      puts "#{i}: #{Tweet.new(status).text}"
+      index_queue.add(Tweet.new(status))
+      i += 1
     end
   end
 end
@@ -56,41 +47,3 @@ end
 index_queue.close
 word2id.close
 doc2id.close
-
-
-__END__
-
-queue = PageQueue.new
-repository = Repository.new("data.db")
-
-n = 10
-crawlers = Array.new
-n.times{|i|
-  crawlers.push Crawler.new
-}
-
-t = []
-num_of_index = 0
-max = 10000
-n.times{|i|
-  t.push Thread.start{
-    while queue.next && num_of_index < max
-      url = queue.get
-      crawler = crawlers[i]
-      puts "#{num_of_index}\t#{i}\t#{url}"
-      result = crawler.crawl(url)
-      repository.save(url, crawler.page.body) if !crawler.page.nil?
-      next if result.nil? # no links in this page
-      result.each{|url|
-        if url =~ /http:\/\/twitter\.com\/[a-zA-Z0-9_]*$/
-          queue.add(url) if exclusive_list.index(url).nil?
-        end
-      }
-      num_of_index += 1
-    end
-  }
-}
-
-t.map{|t|t.join}
-
-repository.close
