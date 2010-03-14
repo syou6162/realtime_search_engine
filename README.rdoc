@@ -1,13 +1,13 @@
-== Realtime Search Engine for Twitter
+= Realtime Search Engine for Twitter
 This is a realtime search engine for twitter using Twitter Streaming API. This has a web interface for search working at localhost.
 
-== Usage
+= Usage
 This depends on some Ruby's libraries. To use this, please install depending libraries. These are following.
-- tokyocabinet
--- http://1978th.net/tokyocabinet/index.html
-- tokyotyrant
--- http://1978th.net/tokyotyrant/
-- sinatra
--- http://www.sinatrarb.com/
--- Use as a server. This uses haml() as the template engine.
+* tokyocabinet
+- http://1978th.net/tokyocabinet/index.html
+* tokyotyrant
+- http://1978th.net/tokyotyrant/
+* sinatra
+- http://www.sinatrarb.com/
+- Use as a server. This uses haml() as the template engine.
 Configuration is written in config.yaml.
