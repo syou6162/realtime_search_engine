@@ -1,0 +1,12 @@
+!!! XML 
+!!!  
+%html{html_attrs('ja')}
+  %head
+    %title Simpe Realtime Search for Twitter.
+    %link{:rel => :stylesheet, :href => "./stylesheet.css", :type => "text/css"}
+  %body
+    %div.main
+      %h1.title Simpe Realtime Search for Twitter.
+      %form{:method => "GET", :action => "search"}
+        %input{:type => "text", :name => "query"}
+        %input{:type => "submit", :value => "Search"}

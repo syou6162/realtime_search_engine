@@ -2,10 +2,10 @@
 !!!  
 %html{html_attrs('ja')}
   %head
-    %title リアルタイム検索エンジンの簡易版 
+    %title #{@term} - Simpe Realtime Search for Twitter.
     %link{:rel => :stylesheet, :href => "/stylesheet.css", :type => "text/css"}
   %body
-    %h1.title リアルタイム検索エンジンの簡易版 
+    %h1.title #{@term} - Simpe Realtime Search for Twitter.
     %ul
     - @result.each do |item|
       %li
