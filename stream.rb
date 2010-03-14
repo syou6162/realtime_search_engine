@@ -1,5 +1,8 @@
 #!/opt/local/bin/ruby1.9
 # -*- coding: utf-8 -*-
+
+require 'uri'
+require 'net/http'
 require 'yaml'
 require 'json'
 require "word2id"
