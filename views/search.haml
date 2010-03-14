@@ -1,0 +1,12 @@
+!!! XML 
+!!!  
+%html{html_attrs('ja')}
+  %head
+    %title リアルタイム検索エンジンの簡易版 
+    %link{:rel => :stylesheet, :href => "/stylesheet.css", :type => "text/css"}
+  %body
+    %h1.title リアルタイム検索エンジンの簡易版 
+    %ul
+    - @result.each do |item|
+      %li
+        %a{:href => "#{item}"} #{item}
