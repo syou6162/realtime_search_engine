@@ -6,19 +6,28 @@ class Doc2ID
     @doc2id = Hash.new
     @id2doc = Array.new
     @rdb = TokyoTyrant::RDB::new
-    @rdb.open(opts["host"], opts["port"])
+    if !@rdb.open(opts["host"], opts["port"])
+      ecode = @rdb.ecode
+      STDERR.printf("open error: %s\n", @rdb.errmsg(ecode))
+    end 
+
+    @modify = opts["modify"] || true
 
     # traverse records
-    @rdb.iterinit
-    while doc = @rdb.iternext
-      doc = doc.force_encoding('UTF-8')
-      id = @rdb.get(doc).to_i
-      @doc2id[doc] = id
-      @id2doc[id] = doc
+    if @modify
+      @rdb.iterinit
+      while doc = @rdb.iternext
+        doc = doc.force_encoding('UTF-8')
+        id = @rdb.get(doc).to_i
+        @doc2id[doc] = id
+        @id2doc[id] = doc
+      end
     end
   end
-  def getID(doc, modify = true)
-    if !@doc2id.key?(doc) && modify
+  def getID(doc)
+    if !@modify
+      return @rdb.get(doc).to_i
+    elsif !@doc2id.key?(doc) && @modify
       @doc2id[doc] = @doc2id.size
       @id2doc.push doc
       @rdb.put(doc, @doc2id[doc])
