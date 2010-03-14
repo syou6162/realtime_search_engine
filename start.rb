@@ -4,16 +4,15 @@
 require 'sinatra'
 require 'yaml'
 require 'haml'
+require 'sass'
 require "word2id"
 require "doc2id"
 require 'inverted_index'
-require 'pp'
 
 config = YAML.load_file("config.yaml")
-pp config
 
-get '/search/:name' do
-  term = params[:name].force_encoding('UTF-8')
+get '/search' do
+  @term = params[:query].force_encoding('UTF-8')
   word2id = Word2ID.new({"host" => config["word2id"]["host"], 
                           "port" => config["word2id"]["port"]})
 
@@ -24,7 +23,7 @@ get '/search/:name' do
                                        "host" => config["word2docs"]["host"], 
                                        "port" => config["word2docs"]["port"]})
   
-  @result = inverted_index.getDocs(term).map{|doc_id|
+  @result = inverted_index.getDocs(@term).map{|doc_id|
     doc2id[doc_id]
   }
 
@@ -34,3 +33,13 @@ get '/search/:name' do
 
   haml :search
 end
+
+get '/?' do
+  haml :index
+end
+
+get '/stylesheet.css' do
+  content_type 'text/css', :charset => 'utf-8'
+  sass :stylesheet
+end
+
