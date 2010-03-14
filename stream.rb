@@ -7,20 +7,27 @@ require 'yaml'
 require 'json'
 require "word2id"
 require "doc2id"
+require "doc_id2tweet"
 require "tweet"
-require "index_queue"
+require "indexer"
 
 config = YAML.load_file("config.yaml")
 
 word2id = Word2ID.new({"host" => config["word2id"]["host"], 
-                        "port" => config["word2id"]["port"]})
+                        "port" => config["word2id"]["port"],
+                        "modify" => true})
 
 doc2id = Doc2ID.new({"host" => config["doc2id"]["host"], 
-                      "port" => config["doc2id"]["port"]})
+                      "port" => config["doc2id"]["port"],
+                      "modify" => true})
 
-index_queue = IndexQueue.new({"word2id" => word2id, "doc2id" => doc2id,
-                               "host" => config["word2docs"]["host"], 
-                               "port" => config["word2docs"]["port"]})
+# doc_id2tweet = DocID2Tweet.new({"host" => config["docid2tweet"]["host"], 
+#                                  "port" => config["docid2tweet"]["port"],
+#                                  "modify" => true})
+
+indexer = Indexer.new({"word2id" => word2id, "doc2id" => doc2id,
+                        "host" => config["word2docs"]["host"], 
+                        "port" => config["word2docs"]["port"]})
 
 uri = URI.parse('http://stream.twitter.com/1/statuses/sample.json')
 
@@ -41,7 +48,10 @@ Net::HTTP.start(uri.host, uri.port) do |http|
       next unless status['text']
       user = status['user']
       puts "#{i}: #{Tweet.new(status).text}"
-      index_queue.add(Tweet.new(status))
+      tweet = Tweet.new(status)
+      indexer.add(tweet)
+      # tweet = Tweet.new(status)
+      # doc_id2tweet.put(doc2id.getID(tweet.url), tweet)
       i += 1
     end
   end
